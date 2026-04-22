@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>How It Works - Routine Organizer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .theme-toggle-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+        .mode-btn {
+            background: var(--primary-accent);
+            color: var(--bg-card);
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-profile">
+            <img src="logo.jpg" alt="Profile">
+        </div>
+        <div class="nav-links">
+            <a href="index.html">General Planner</a>
+            <a href="study.html">Study</a>
+            <a href="gym.html">Gym</a>
+            <a href="work.html">Work</a>
+            <a href="review.html">Reviewing</a>
+            <a href="classes.html">Classes</a>
+            <hr style="width:100%; border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 10px 0;">
+            <a href="info.html">About</a>
+            <a href="how-it-works.html" class="active">How It Works</a>
+            <a href="purpose.html">Purpose</a>
+        </div>
+    </nav>
+
+    <div class="theme-toggle-container">
+        <button class="mode-btn" onclick="toggleMode()" id="modeBtn">🌙 Dark Mode</button>
+    </div>
+    
+    <div class="main-wrapper">
+        <div class="container">
+            <h1>How It Works</h1>
+            <ol style="line-height: 2;">
+                <li><b>Select a Page:</b> Use the sidebar to choose a specific category like Study or Gym.</li>
+                <li><b>Add Tasks:</b> Click "+ Add Plan" for any day and type your time and task.</li>
+                <li><b>Print:</b> Click the "Print Schedule" button to save or print a hard copy.</li>
+                <li><b>Refresh:</b> Refreshing the browser clears the board for a new planning session.</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function toggleMode() {
+            const body = document.body;
+            const btn = document.getElementById('modeBtn');
+            const isDark = body.getAttribute('data-theme') === 'bw-dark';
+            
+            if (isDark) {
+                body.setAttribute('data-theme', '');
+                btn.innerText = "🌙 Dark Mode";
+            } else {
+                body.setAttribute('data-theme', 'bw-dark');
+                btn.innerText = "☀️ Light Mode";
+            }
+        }
+    </script>
+</body>
+</html>

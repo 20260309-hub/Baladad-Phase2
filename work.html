@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Professional Work Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .theme-toggle-container { position: absolute; top: 20px; right: 20px; z-index: 2000; }
+        
+        .work-header-area {
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+        }
+        .work-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary-accent);
+            font-weight: 800;
+        }
+        .priority-select {
+            font-size: 0.65rem;
+            border: none;
+            background: var(--border-color);
+            border-radius: 4px;
+            padding: 2px 5px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="work-page">
+    <nav>
+        <div class="nav-profile">
+            <img src="logo.jpg" alt="Profile">
+        </div>
+        <div class="nav-links">
+            <a href="index.html">General Planner</a>
+            <a href="study.html">Study</a>
+            <a href="gym.html">Gym</a>
+            <a href="work.html" class="active">Work</a>
+            <a href="review.html">Reviewing</a>
+            <a href="classes.html">Classes</a>
+            <hr style="width:100%; border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 10px 0;">
+            <a href="info.html">About</a>
+            <a href="how-it-works.html">How It Works</a>
+            <a href="purpose.html">Purpose</a>
+        </div>
+    </nav>
+
+    <div class="theme-toggle-container">
+        <button class="mode-btn" onclick="toggleMode()" id="modeBtn">🌙 Dark Mode</button>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="work-header-area">
+            <span class="work-label">Professional Workspace</span>
+            <h1 style="text-align:left; margin-top:5px;">Weekly Work Schedule</h1>
+            <button class="print-btn" onclick="window.print()">🖨️ Export PDF / Print</button>
+        </div>
+
+        <div class="container" style="padding: 20px;">
+            <div class="grid" id="plannerGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMode() {
+            const body = document.body;
+            const btn = document.getElementById('modeBtn');
+            const isDark = body.getAttribute('data-theme') === 'bw-dark';
+            body.setAttribute('data-theme', isDark ? '' : 'bw-dark');
+            btn.innerText = isDark ? "🌙 Dark Mode" : "☀️ Light Mode";
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const grid = document.getElementById('plannerGrid');
+            days.forEach(day => {
+                const col = document.createElement('div');
+                col.className = 'day-column';
+                col.innerHTML = `
+                    <div class="day-header" style="text-align:left; padding-left:15px;">${day}</div>
+                    <div class="slot-list"></div>
+                    <button class="add-slot-btn" onclick="addSlot(this)">+ New Task</button>
+                `;
+                grid.appendChild(col);
+                addSlot(col.querySelector('.add-slot-btn'));
+            });
+        });
+
+        function addSlot(button) {
+            const slotList = button.previousElementSibling;
+            const newSlot = document.createElement('div');
+            newSlot.className = 'time-slot';
+            newSlot.innerHTML = `
+                <div class="slot-container">
+                    <input type="text" class="time-input" placeholder="Deadline" style="width:70px; font-size:0.65rem;">
+                    <div style="flex-grow:1; display:flex; flex-direction:column;">
+                        <input type="text" class="task-input" placeholder="Task description...">
+                        <select class="priority-select">
+                            <option value="low">Low Priority</option>
+                            <option value="med">Medium</option>
+                            <option value="high">High Priority</option>
+                        </select>
+                    </div>
+                    <span class="remove-slot" onclick="this.closest('.time-slot').remove()">×</span>
+                </div>`;
+            slotList.appendChild(newSlot);
+        }
+    </script>
+</body>
+</html>

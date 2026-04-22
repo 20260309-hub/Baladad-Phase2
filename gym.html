@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Gym Schedule</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="gym-page">
+    <nav>
+        <div class="nav-profile">
+            <img src="logo.jpg" alt="Profile">
+        </div>
+        <div class="nav-links">
+            <a href="index.html">General Planner</a>
+            <a href="study.html">Study</a>
+            <a href="gym.html" class="active">Gym</a>
+            <a href="work.html">Work</a>
+            <a href="review.html">Reviewing</a>
+            <a href="classes.html">Classes</a>
+            <hr style="width:100%; border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 10px 0;">
+            <a href="info.html">About</a>
+            <a href="how-it-works.html">How It Works</a>
+            <a href="purpose.html">Purpose</a>
+        </div>
+    </nav>
+    
+
+    <div class="theme-menu-container">
+        <div class="mode-btn" onclick="toggleThemeMenu()">THEME ▾</div>
+        <div class="theme-options" id="themeOptions">
+            <div class="theme-choice" onclick="setTheme('')"><div class="theme-dot" style="background:#f1f2f6;"></div><span class="theme-name">Frost</span></div>
+            <div class="theme-choice" onclick="setTheme('bw-dark')"><div class="theme-dot" style="background:#1c1c1c;"></div><span class="theme-name">Midnight</span></div>
+            <div class="theme-choice" onclick="setTheme('slate')"><div class="theme-dot" style="background:#000;"></div><span class="theme-name">Onyx</span></div>
+            <div class="theme-choice" onclick="setTheme('crimson')"><div class="theme-dot" style="background:#8b2635;"></div><span class="theme-name">Nordic Red</span></div>
+            <div class="theme-choice" onclick="setTheme('forest')"><div class="theme-dot" style="background:#4a6741;"></div><span class="theme-name">Sage Green</span></div>
+            <div class="theme-choice" onclick="setTheme('gym-yellow')"><div class="theme-dot" style="background:#c69500;"></div><span class="theme-name">Amber Gold</span></div>
+            <div class="theme-choice" onclick="setTheme('gym-blue')"><div class="theme-dot" style="background:#4a69bd;"></div><span class="theme-name">Steel Blue</span></div>
+            <div class="theme-choice" onclick="setTheme('sakura')"><div class="theme-dot" style="background:#b38184;"></div><span class="theme-name">Dusty Rose</span></div>
+        </div>
+    </div>
+
+    <div class="main-wrapper">
+        <div class="container">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+                <h1>GYM SCHEDULE</h1>
+                <button class="print-btn" onclick="window.print()">🖨️ Print Schedule</button>
+            </div>
+            
+            <div class="wizard-container" id="wizard">
+                <div id="step1" class="wizard-step active">
+                    <h3>How would you like to start?</h3>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button class="wizard-btn" onclick="setFreq(1)">Use Templates (PPL/UL)</button>
+                        <button class="wizard-btn" style="background: var(--text-main) !important; color: var(--bg-card) !important;" onclick="build('CUSTOM')">Manual / Custom Setup</button>
+                    </div>
+                </div>
+                
+                <div id="step2" class="wizard-step" style="display:none;">
+                    <button onclick="goBack()" style="background:none; border:none; color:var(--primary-accent); cursor:pointer; font-weight:bold;">← BACK</button>
+                    <div id="splitButtons" style="margin-top: 15px; display:flex; gap:10px;"></div>
+                </div>
+            </div>
+
+            <div class="grid" id="plannerGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const templates = {
+            'Push': ['Bench Press', 'Shoulder Press', 'Lateral Raises'],
+            'Pull': ['Lat Pulldowns', 'Seated Rows', 'Bicep Curls'],
+            'Legs': ['Squats', 'Leg Press', 'Calf Raises'],
+            'Upper': ['Chest Press', 'Rows', 'OHP'],
+            'Lower': ['RDLs', 'Leg Extensions', 'Abs'],
+            'Rest': ['Recovery/Rest'],
+            'CUSTOM': []
+        };
+
+        function toggleThemeMenu() { document.getElementById('themeOptions').classList.toggle('active'); }
+        function setTheme(t) { document.body.setAttribute('data-theme', t); document.getElementById('themeOptions').classList.remove('active'); }
+        function goBack() { document.getElementById('step1').style.display = 'block'; document.getElementById('step2').style.display = 'none'; }
+
+        function setFreq(type) {
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            const btnArea = document.getElementById('splitButtons');
+            btnArea.innerHTML = `
+                <button class="wizard-btn" onclick="build('PPL1')">PPL (1x Week)</button>
+                <button class="wizard-btn" onclick="build('PPL2')">PPL (2x Week)</button>
+                <button class="wizard-btn" onclick="build('UL')">Upper/Lower</button>
+            `;
+        }
+
+        function build(type) {
+            const grid = document.getElementById('plannerGrid');
+            grid.innerHTML = '';
+            let routine = [];
+
+            if(type === 'PPL1') routine = ['Push', 'Rest', 'Pull', 'Rest', 'Legs', 'Rest', 'Rest'];
+            else if(type === 'PPL2') routine = ['Push', 'Pull', 'Legs', 'Push', 'Pull', 'Legs', 'Rest'];
+            else if(type === 'UL') routine = ['Upper', 'Lower', 'Rest', 'Upper', 'Lower', 'Rest', 'Rest'];
+            else routine = Array(7).fill('CUSTOM'); 
+
+            days.forEach((day, i) => {
+                const col = document.createElement('div');
+                col.className = 'day-column';
+                const splitKey = routine[i];
+                const exercises = templates[splitKey] || [];
+                
+                let slotsHtml = exercises.map(ex => createSlotHtml(ex)).join('');
+                
+                col.innerHTML = `
+                    <div class="day-header">${day}</div>
+                    <div class="slot-list">${slotsHtml}</div>
+                    <button class="add-slot-btn" onclick="addCustomSlot(this)">+ Add Exercise</button>
+                `;
+                grid.appendChild(col);
+            });
+            document.getElementById('wizard').style.display = 'none';
+        }
+
+        function createSlotHtml(val) {
+            return `
+                <div class="time-slot">
+                    <div class="slot-container">
+                        <input type="text" class="time-input" placeholder="Sets">
+                        <input type="text" class="task-input" value="${val}" placeholder="Exercise...">
+                        <span class="remove-slot" onclick="this.closest('.time-slot').remove()">×</span>
+                    </div>
+                </div>`;
+        }
+
+        function addCustomSlot(btn) {
+            const list = btn.previousElementSibling;
+            list.insertAdjacentHTML('beforeend', createSlotHtml(''));
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('plannerGrid');
+            days.forEach(day => {
+                grid.innerHTML += `<div class="day-column"><div class="day-header">${day}</div><div class="slot-list"></div></div>`;
+            });
+        });
+    </script>
+</body>
+</html>

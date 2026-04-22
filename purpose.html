@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Purpose - Routine Organizer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .theme-toggle-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+        .mode-btn {
+            background: var(--primary-accent);
+            color: var(--bg-card);
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        .profile-middle {
+            border: 3px solid var(--primary-accent);
+            transition: border 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-profile">
+            <img src="logo.jpg" alt="Profile">
+        </div>
+        <div class="nav-links">
+            <a href="index.html">General Planner</a>
+            <a href="study.html">Study</a>
+            <a href="gym.html">Gym</a>
+            <a href="work.html">Work</a>
+            <a href="review.html">Reviewing</a>
+            <a href="classes.html">Classes</a>
+            <hr style="width:100%; border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 10px 0;">
+            <a href="info.html">About</a>
+            <a href="how-it-works.html">How It Works</a>
+            <a href="purpose.html" class="active">Purpose</a>
+        </div>
+    </nav>
+
+    <div class="theme-toggle-container">
+        <button class="mode-btn" onclick="toggleMode()" id="modeBtn">🌙 Dark Mode</button>
+    </div>
+    
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="profile-center-container" style="text-align: center; margin-bottom: 20px;">
+                <img src="logo.jpg" alt="Profile" class="profile-middle" style="width:100px; height:100px; border-radius:50%; object-fit: cover;">
+            </div>
+            <h1>Our Purpose</h1>
+            <p>The core purpose of this tool is to <b>reduce stress</b> by transforming a chaotic stream of demands into an organized, purposeful workflow.</p>
+            <ul>
+                <li><b>Enhanced Clarity:</b> Seeing your whole week at once helps you set realistic goals.</li>
+                <li><b>Mental Health:</b> Every session is a new chance to succeed.</li>
+                <li><b>Privacy:</b> Your personal schedule remains entirely yours.</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function toggleMode() {
+            const body = document.body;
+            const btn = document.getElementById('modeBtn');
+            const isDark = body.getAttribute('data-theme') === 'bw-dark';
+            
+            if (isDark) {
+                body.setAttribute('data-theme', '');
+                btn.innerText = "🌙 Dark Mode";
+            } else {
+                body.setAttribute('data-theme', 'bw-dark');
+                btn.innerText = "☀️ Light Mode";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>General Planner</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .theme-toggle-container {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+        .mode-btn {
+            background: var(--primary-accent);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-profile">
+            <img src="logo.jpg" alt="Profile">
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="active">General Planner</a>
+            <a href="study.html">Study</a>
+            <a href="gym.html">Gym</a>
+            <a href="work.html">Work</a>
+            <a href="review.html">Reviewing</a>
+            <a href="classes.html">Classes</a>
+            <hr style="width:100%; border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 10px 0;">
+            <a href="info.html">About</a>
+            <a href="how-it-works.html">How It Works</a>
+            <a href="purpose.html">Purpose</a>
+        </div>
+    </nav>
+    
+
+    <div class="theme-toggle-container">
+        <button class="mode-btn" onclick="toggleMode()" id="modeBtn">🌙 Dark Mode</button>
+    </div>
+
+    <div class="main-wrapper">
+        <button class="print-btn" onclick="window.print()">🖨️ Print Schedule</button>
+        <div class="container">
+            <h1>General Weekly Routine</h1>
+            <div class="grid-container">
+                <div class="grid" id="plannerGrid"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMode() {
+            const body = document.body;
+            const btn = document.getElementById('modeBtn');
+            const isDark = body.getAttribute('data-theme') === 'bw-dark';
+            
+            if (isDark) {
+                body.setAttribute('data-theme', ''); 
+                btn.innerText = "🌙 Dark Mode";
+            } else {
+                body.setAttribute('data-theme', 'bw-dark'); 
+                btn.innerText = "☀️ Light Mode";
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const grid = document.getElementById('plannerGrid');
+            days.forEach(day => {
+                const col = document.createElement('div');
+                col.className = 'day-column';
+                col.innerHTML = `
+                    <div class="day-header">${day}</div>
+                    <div class="slot-list"></div>
+                    <button class="add-slot-btn" onclick="addSlot(this)">+ Add Plan</button>
+                `;
+                grid.appendChild(col);
+                addSlot(col.querySelector('.add-slot-btn'));
+            });
+        });
+
+        function addSlot(button) {
+            const slotList = button.previousElementSibling;
+            const newSlot = document.createElement('div');
+            newSlot.className = 'time-slot';
+            newSlot.innerHTML = `
+                <div class="slot-container">
+                    <input type="text" class="time-input" placeholder="00:00">
+                    <input type="text" class="task-input" placeholder="Task...">
+                    <span class="remove-slot" onclick="this.closest('.time-slot').remove()">×</span>
+                </div>`;
+            slotList.appendChild(newSlot);
+        }
+    </script>
+</body>
+</html>

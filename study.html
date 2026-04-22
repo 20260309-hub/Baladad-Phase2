@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Study Subjects</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .theme-toggle-container { position: absolute; top: 20px; right: 20px; z-index: 2000; }
+        .mode-btn { padding: 5px 12px; border-radius: 20px; cursor: pointer; font-size: 0.75rem; font-weight: bold; }
+        .subject-item { justify-content: space-between; padding: 5px; border-radius: 5px; transition: 0.2s; }
+        .subject-item:hover { background: rgba(0,0,0,0.05); }
+        .delete-sub { cursor: pointer; color: #ff4757; font-weight: bold; font-size: 0.8rem; margin-left: 10px; }
+        .edit-sub { cursor: pointer; opacity: 0.5; font-size: 0.7rem; margin-left: auto; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-profile">
+            <img src="logo.jpg" alt="Profile">
+        </div>
+        <div class="nav-links">
+            <a href="index.html">General Planner</a>
+            <a href="study.html" class="active">Study</a>
+            <a href="gym.html">Gym</a>
+            <a href="work.html">Work</a>
+            <a href="review.html">Reviewing</a>
+            <a href="classes.html">Classes</a>
+            <hr style="width:100%; border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 10px 0;">
+            <a href="info.html">About</a>
+            <a href="how-it-works.html">How It Works</a>
+            <a href="purpose.html">Purpose</a>
+        </div>
+    </nav>
+    
+
+    <div class="theme-toggle-container">
+        <button class="mode-btn" onclick="toggleMode()" id="modeBtn">🌙 Dark Mode</button>
+    </div>
+
+    <div class="main-wrapper">
+        <button class="print-btn" onclick="window.print()">🖨️ Print Schedule</button>
+        <div class="container">
+            <h1>Study</h1>
+            
+            <div class="planner-layout">
+                <div class="subject-manager">
+                    <h3>1. Manage Subjects</h3>
+                    <div id="subjectTable"></div>
+                    <div style="margin-top:15px; display:flex; flex-direction:column; gap:8px;">
+                        <input type="text" id="newSubName" placeholder="Subject Name...">
+                        <select id="newSubColor">
+                            <option value="c1">Red</option>
+                            <option value="c2">Orange</option>
+                            <option value="c3">Yellow</option>
+                            <option value="c4">Green</option>
+                            <option value="c6">Blue</option>
+                            <option value="c9">Purple</option>
+                        </select>
+                        <button onclick="addSubjectToList()" class="add-slot-btn" style="border:none; border-radius:8px;">+ Add/Update</button>
+                    </div>
+                </div>
+
+                <div class="grid-container">
+                    <h3>2. Map Your Week</h3>
+                    <div class="grid" id="plannerGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let subjects = [];
+
+        function toggleMode() {
+            const body = document.body;
+            const btn = document.getElementById('modeBtn');
+            const isDark = body.getAttribute('data-theme') === 'bw-dark';
+            body.setAttribute('data-theme', isDark ? '' : 'bw-dark');
+            btn.innerText = isDark ? "🌙 Dark Mode" : "☀️ Light Mode";
+        }
+
+        function addSubjectToList() {
+            const nameInput = document.getElementById('newSubName');
+            const colorInput = document.getElementById('newSubColor');
+            if(!nameInput.value) return;
+
+            const existingIndex = subjects.findIndex(s => s.name === nameInput.value);
+            if(existingIndex > -1) {
+                subjects[existingIndex].color = colorInput.value;
+            } else {
+                subjects.push({ name: nameInput.value, color: colorInput.value });
+            }
+            
+            renderSubjectTable();
+            updateAllDropdowns();
+            nameInput.value = "";
+        }
+
+        function deleteSubject(index) {
+            subjects.splice(index, 1);
+            renderSubjectTable();
+            updateAllDropdowns();
+        }
+
+        function renderSubjectTable() {
+            const container = document.getElementById('subjectTable');
+            container.innerHTML = subjects.map((s, index) => `
+                <div class="subject-item" style="display:flex; align-items:center;">
+                    <div class="subject-dot bg-${s.color}"></div>
+                    <span style="flex-grow:1; margin-left:10px;">${s.name}</span>
+                    <span class="delete-sub" onclick="deleteSubject(${index})">Delete</span>
+                </div>
+            `).join('');
+        }
+
+        function updateAllDropdowns() {
+            const dropdowns = document.querySelectorAll('select.task-input');
+            const optionsHtml = `<option value="">-- Choice --</option>` + 
+                subjects.map(s => `<option value="${s.color}">${s.name}</option>`).join('');
+            
+            dropdowns.forEach(select => {
+                const currentVal = select.options[select.selectedIndex]?.text;
+                select.innerHTML = optionsHtml;
+                for (let i = 0; i < select.options.length; i++) {
+                    if (select.options[i].text === currentVal) {
+                        select.selectedIndex = i;
+                        applyColor(select);
+                        break;
+                    }
+                }
+            });
+        }
+
+        function applyColor(select) {
+            const colorClass = select.value;
+            const slot = select.closest('.time-slot');
+            slot.className = 'time-slot';
+            if(colorClass) slot.classList.add('slot-' + colorClass);
+        }
+
+        function addSlot(button) {
+            const slotList = button.previousElementSibling;
+            const newSlot = document.createElement('div');
+            newSlot.className = 'time-slot';
+            const options = subjects.map(s => `<option value="${s.color}">${s.name}</option>`).join('');
+            newSlot.innerHTML = `
+                <div class="slot-container">
+                    <input type="text" class="time-input" placeholder="00:00">
+                    <select class="task-input" onchange="applyColor(this)">
+                        <option value="">-- Choice --</option>
+                        ${options}
+                    </select>
+                    <span class="remove-slot" onclick="this.closest('.time-slot').remove()">×</span>
+                </div>`;
+            slotList.appendChild(newSlot);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const grid = document.getElementById('plannerGrid');
+            days.forEach(day => {
+                const col = document.createElement('div');
+                col.className = 'day-column';
+                col.innerHTML = `<div class="day-header">${day}</div><div class="slot-list"></div><button class="add-slot-btn" onclick="addSlot(this)">+ Add Plan</button>`;
+                grid.appendChild(col);
+            });
+        });
+    </script>
+</body>
+</html>
